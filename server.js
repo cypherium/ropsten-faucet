@@ -22,7 +22,8 @@ app.options('/api/eth_sendRawTransaction', cors());
 const privateKey = config.privateKey;
 const url = 'https://pubnodestest.cypherium.io';
 const blacklistTime = 1440; //mins
-const recaptchaSecret = config.recaptchaSecret;
+//const recaptchaSecret = config.recaptchaSecret;
+const recaptchaSecret = "6LczvFodAAAAAEKYrtD2zYlocuIhEBcXZA5Jctbr";
 
 // Axios request interceptor
 // axios.interceptors.request.use(request => {
@@ -110,33 +111,33 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   setupBlacklist(path)
 
   // check captcha
-  let captchaResponse;
-  try {
-    captchaResponse = await axios({
-      method: 'POST',
-      url: 'https://www.google.com/recaptcha/api/siteverify',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: querystring.stringify({
-        'response': req.body['g-recaptcha-response'],
-        'secret': recaptchaSecret
-      })
-    });
-  } catch (error) {
-    console.log(error.message);
-    return res.status(500);
-  }
+  // let captchaResponse;
+  // try {
+  //   captchaResponse = await axios({
+  //     method: 'POST',
+  //     url: 'https://www.google.com/recaptcha/api/siteverify',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded'
+  //     },
+  //     data: querystring.stringify({
+  //       'response': req.body['g-recaptcha-response'],
+  //       'secret': recaptchaSecret
+  //     })
+  //   });
+  // } catch (error) {
+  //   console.log(error.message);
+  //   return res.status(500);
+  // }
 
-  if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
-  if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
+  // if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
+  // if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
 
   // release variable below determines whether IP is blacklisted
-  let release = releaseEther(ipPath)
-  if (!release) {
-    res.status(429).send('IP address temporarily blacklisted.');
-    return false;
-  }
+  // let release = releaseEther(ipPath)
+  // if (!release) {
+  //   res.status(429).send('IP address temporarily blacklisted.');
+  //   return false;
+  // }
   const to = req.body.address;
   let response;
   try {
