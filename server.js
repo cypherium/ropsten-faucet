@@ -1,4 +1,4 @@
-const EthereumTx = require('ethereumjs-tx');
+const CypheriumTx = require('cypheriumjs-tx');
 const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
@@ -12,7 +12,8 @@ const querystring = require('querystring');
 const config = require('./config.js');
 
 const app = express();
-
+const TX_VERSION = '0x122';
+const TX_DEFAULT_GASLIMIT = '0x5208';
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
@@ -20,7 +21,7 @@ app.options('/api/eth_sendRawTransaction', cors());
 
 const privateKey = config.privateKey;
 const key = Buffer.from(privateKey, 'hex');
-const url = 'https://ropsten.infura.io/';
+const url = 'https://pubnodestest.cypherium.io/';
 const blacklistTime = 1440; //mins
 const recaptchaSecret = config.recaptchaSecret;
 
@@ -38,17 +39,25 @@ function generateTx(nonce, to) {
   const amount = 1000000000000000000;
   const value = '0x' + parseInt(amount).toString(16);
   const txParams = {
+    version: TX_VERSION,
+    senderKey: '0x' + privateKey.substring(64, 128),
+    from: from,
     nonce: nonce,
-    gasPrice: '0x2540be400',
-    gasLimit: '0xc350',
+    gasLimit: TX_DEFAULT_GASLIMIT,
+    gasPrice: '0x430e23400',
     to: to,
+    data: 0x00,
     value: value,
-    data: '0x00',
-    chainId: 3
-  }
+   // chainId: 12124
+  };
 
-  const tx = new EthereumTx(txParams)
-  tx.sign(key);
+  console.log("Transfer parameters：" + JSON.stringify(txParams));
+
+  const tx = new CypheriumTx.Transaction(txParams, {
+  });
+  var p = new Uint8Array(hexStringToBytes(privateKey));
+  var k = new Uint8Array(hexStringToBytes(privateKey.substring(64, 128)));
+  tx.signWith25519(p, k);
   const serializedTx = tx.serialize();
   return serializedTx.toString('hex');
 }
@@ -198,3 +207,18 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
 app.listen(3001, () => {
   console.log('Ropsten faucet listening on port 3001');
 })
+
+function hexStringToBytes(hexStr) {
+  let result = [];
+  while (hexStr.length >= 2) {
+    result.push(parseInt(hexStr.substring(0, 2), 16));
+    hexStr = hexStr.substring(2, hexStr.length);
+  }
+  return result;
+}
+
+function bytesToHexString(byteArray) {
+  return Array.prototype.map.call(byteArray, function (byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+  }).join('');
+}
