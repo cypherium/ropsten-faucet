@@ -153,7 +153,7 @@ class App extends Component {
                 <div className="row">
                   <form onSubmit={this.handleSubmit} style={{width: "100%"}}>
                     <input className="fwd-input" style={{width: "65%", marginRight: "8px"}} placeholder="Your Cypherium Address" type="text" value={this.state.address} onChange={this.handleChange} />
-                      <ReCAPTCHA sitekey="6Lc36UYUAAAAAKIoH-Yyqxn7Mw51MuzC884LS8M5" onChange={this.handleCaptchaResponse} />
+                      <ReCAPTCHA sitekey="6LeRd1odAAAAAKefQtPKMnozV3JLWxqyJiH4g_rQ" onChange={this.handleCaptchaResponse} />
                     <input className="fwd-btn" style={{width: "30%"}} type="submit" value="Get CPH!" />
                   </form>
                   <br />
