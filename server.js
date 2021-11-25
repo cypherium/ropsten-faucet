@@ -13,15 +13,14 @@ const config = require('./config.js');
 
 const app = express();
 const TX_VERSION = '0x122';
-const TX_DEFAULT_GASLIMIT = '0x5208';
+const TX_DEFAULT_GASLIMIT = '0x5708';
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
 app.options('/api/eth_sendRawTransaction', cors());
 
 const privateKey = config.privateKey;
-const key = Buffer.from(privateKey, 'hex');
-const url = 'https://pubnodestest.cypherium.io/';
+const url = 'https://pubnodestest.cypherium.io';
 const blacklistTime = 1440; //mins
 const recaptchaSecret = config.recaptchaSecret;
 
@@ -34,25 +33,21 @@ const recaptchaSecret = config.recaptchaSecret;
 // get nonce in future using 'getTransactionCount'
 // Generate raw tx
 function generateTx(nonce, to) {
-  // const testWeiAmount = 1000000000000000;
-  // const value = '0x' + parseInt(testWeiAmount).toString(16);
-  const amount = 1000000000000000000;
+  const amount = 5000000000000000000;
   const value = '0x' + parseInt(amount).toString(16);
   const txParams = {
     version: TX_VERSION,
     senderKey: '0x' + privateKey.substring(64, 128),
-    from: from,
     nonce: nonce,
     gasLimit: TX_DEFAULT_GASLIMIT,
     gasPrice: '0x430e23400',
     to: to,
     data: 0x00,
     value: value,
-   // chainId: 12124
+    chainId: 12124
   };
 
-  console.log("Transfer parameters：" + JSON.stringify(txParams));
-
+  //console.log("Transfer parameters：" + JSON.stringify(txParams));
   const tx = new CypheriumTx.Transaction(txParams, {
   });
   var p = new Uint8Array(hexStringToBytes(privateKey));
@@ -104,9 +99,8 @@ function releaseEther(ipPath) {
 
 // Make id same as nonce for simplicity
 app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
+  console.log("post eth_sendRawTransaction");
   if (!req.body) return res.sendStatus(400);
-  console.log('received request');
-
   if (!req.body.address) return res.status(422).send('Empty address field.');
 
   // get IP address and set up paths
@@ -143,7 +137,6 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
     res.status(429).send('IP address temporarily blacklisted.');
     return false;
   }
-
   const to = req.body.address;
   let response;
   try {
@@ -167,9 +160,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   let txCount = response.data.result;
 
   let done = false;
-
   while (!done) {
-    console.log('attempting to send');
     let rawTx = "0x" + generateTx(txCount, to);
     let params = {
       "jsonrpc": "2.0",
@@ -177,7 +168,6 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
       "method": "eth_sendRawTransaction",
       "params": [rawTx]
     };
-
     try {
       response = await axios({
         method: 'POST',
@@ -187,7 +177,6 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
         },
         data: params
       });
-
       if (typeof response.data.result != "undefined") {
         done = true;
       } else if (response.data.error.message != "undefined") {

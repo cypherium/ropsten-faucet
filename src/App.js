@@ -27,12 +27,12 @@ class App extends Component {
   addNotification(type, response) {
     let action;
     if (type === 'success') {
-      action = {
-        label: 'View Transaction',
-        callback: function() {
-          window.open('https://ropsten.etherscan.io/tx/' + response);
-        }
-      }
+      // action = {
+      //   label: 'View Transaction',
+      //   callback: function() {
+      //     window.open('https://ropsten.cypherium.io/tx/' + response);
+      //   }
+      // }
     }
     switch(type) {
       case 'success':
@@ -46,7 +46,7 @@ class App extends Component {
       case 'error':
         if (response === 'IP address temporarily blacklisted.') {
           this.notificationSystem.addNotification({
-            message: "We only drip 1 RtETH per user per day, please try again tomorrow.",
+            message: "We only drip 5 CPH per user per day, please try again tomorrow.",
             level: type,
             position: 'bc'
           });
@@ -84,7 +84,7 @@ class App extends Component {
     window.grecaptcha.reset();
     let address = this.state.address;
     let recaptcha = this.state.recaptcha;
-    const url = 'https://toolbox.bitfwd.xyz/api/eth_sendRawTransaction';
+    const url = 'http://127.0.0.1:3001/api/eth_sendRawTransaction';
 
     let type = '';
     let response;
@@ -153,8 +153,8 @@ class App extends Component {
                 <div className="row">
                   <form onSubmit={this.handleSubmit} style={{width: "100%"}}>
                     <input className="fwd-input" style={{width: "65%", marginRight: "8px"}} placeholder="Your Cypherium Address" type="text" value={this.state.address} onChange={this.handleChange} />
-                    <ReCAPTCHA sitekey="6Lc36UYUAAAAAKIoH-Yyqxn7Mw51MuzC884LS8M5" onChange={this.handleCaptchaResponse} />
-                    <input className="fwd-btn" style={{width: "30%"}} type="submit" value="Get ETH!" />
+                      <ReCAPTCHA sitekey="6Lc36UYUAAAAAKIoH-Yyqxn7Mw51MuzC884LS8M5" onChange={this.handleCaptchaResponse} />
+                    <input className="fwd-btn" style={{width: "30%"}} type="submit" value="Get CPH!" />
                   </form>
                   <br />
                   <NotificationSystem ref="notificationSystem" />
