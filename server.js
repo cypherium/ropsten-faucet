@@ -133,11 +133,11 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   // if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
 
   // release variable below determines whether IP is blacklisted
-  // let release = releaseEther(ipPath)
-  // if (!release) {
-  //   res.status(429).send('IP address temporarily blacklisted.');
-  //   return false;
-  // }
+  let release = releaseEther(ipPath)
+  if (!release) {
+    res.status(429).send('IP address temporarily blacklisted.');
+    return false;
+  }
   const to = req.body.address;
   let response;
   try {
