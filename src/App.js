@@ -10,12 +10,11 @@ class App extends Component {
     super();
     this.state = {
       'address': '',
-      'recaptcha': '',
     };
     this.notificationSystem = null;
 
     this.addNotification = this.addNotification.bind(this);
-    this.handleCaptchaResponse = this.handleCaptchaResponse.bind(this);
+   // this.handleCaptchaResponse = this.handleCaptchaResponse.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -81,10 +80,10 @@ class App extends Component {
 
   async handleSubmit(e) {
     e.preventDefault();
-    window.grecaptcha.reset();
+   // window.grecaptcha.reset();
     let address = this.state.address;
-    let recaptcha = this.state.recaptcha;
-    const url = 'https://ropstenfaucet.cypherium.io/api/eth_sendRawTransaction';
+    //let recaptcha = this.state.recaptcha;
+    const url = 'http://ropstenfaucet.cypherium.io/api/eth_sendRawTransaction';
 
     let type = '';
     let response;
@@ -100,7 +99,7 @@ class App extends Component {
         },
         data: JSON.stringify({
           'address': address,
-          'g-recaptcha-response': recaptcha
+         // 'g-recaptcha-response': recaptcha
         })
       })
     } catch(e) {
@@ -121,9 +120,9 @@ class App extends Component {
     this.setState({ 'address': ''});
   }
 
-  handleCaptchaResponse(response) {
-    this.setState({ 'recaptcha': response })
-  }
+  // handleCaptchaResponse(response) {
+  //   this.setState({ 'recaptcha': response })
+  // }
 
   render() {
     return (
@@ -153,7 +152,6 @@ class App extends Component {
                 <div className="row">
                   <form onSubmit={this.handleSubmit} style={{width: "100%"}}>
                     <input className="fwd-input" style={{width: "65%", marginRight: "8px"}} placeholder="Your Cypherium Address" type="text" value={this.state.address} onChange={this.handleChange} />
-                    <ReCAPTCHA sitekey="6LfUv5ceAAAAAPl7LSzFgwhaq8-sg1A5qGhtQS2y" onChange={this.handleCaptchaResponse} />
                     <input className="fwd-btn" style={{width: "30%"}} type="submit" value="Get CPH!" />
                   </form>
                   <br />

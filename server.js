@@ -110,26 +110,26 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   setupBlacklist(req.body.address)
 
   // check captcha
-  let captchaResponse;
-  try {
-    captchaResponse = await axios({
-      method: 'POST',
-      url: 'https://www.google.com/recaptcha/api/siteverify',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: querystring.stringify({
-        'response': req.body['g-recaptcha-response'],
-        'secret': recaptchaSecret
-      })
-    });
-  } catch (error) {
-    console.log(error.message);
-    return res.status(500);
-  }
-
-  if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
-  if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
+  // let captchaResponse;
+  // try {
+  //   captchaResponse = await axios({
+  //     method: 'POST',
+  //     url: 'https://www.google.com/recaptcha/api/siteverify',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded'
+  //     },
+  //     data: querystring.stringify({
+  //       'response': req.body['g-recaptcha-response'],
+  //       'secret': recaptchaSecret
+  //     })
+  //   });
+  // } catch (error) {
+  //   console.log(error.message);
+  //   return res.status(500);
+  // }
+  //
+  // if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
+  // if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
 
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(req.body.address)
@@ -139,6 +139,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   }
   const to = req.body.address;
   let response;
+  console.log("req.body.address",req.body.address);
   try {
     response = await axios({
       method: 'POST',
@@ -158,7 +159,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
     return res.status(500);
   }
   let txCount = response.data.result;
-
+  console.log("txCount",txCount);
   let done = false;
   while (!done) {
     let rawTx = "0x" + generateTx(txCount, to);
@@ -186,6 +187,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
       console.log(error.message);
       return res.status(500);
     }
+    console.log("response",response);
   }
 
   if (response.status != 200) return res.status(500);
