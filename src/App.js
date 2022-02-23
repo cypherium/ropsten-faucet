@@ -84,7 +84,7 @@ class App extends Component {
     window.grecaptcha.reset();
     let address = this.state.address;
     let recaptcha = this.state.recaptcha;
-    const url = 'https://ropsten.faucet.cypherium.io/api/eth_sendRawTransaction';
+    const url = 'https://ropstenfaucet.cypherium.io/api/eth_sendRawTransaction';
 
     let type = '';
     let response;
@@ -153,7 +153,7 @@ class App extends Component {
                 <div className="row">
                   <form onSubmit={this.handleSubmit} style={{width: "100%"}}>
                     <input className="fwd-input" style={{width: "65%", marginRight: "8px"}} placeholder="Your Cypherium Address" type="text" value={this.state.address} onChange={this.handleChange} />
-                    <ReCAPTCHA sitekey="6LcL1l0dAAAAAJn732XTyGCRMujBNhFK8n_Ldgxs" onChange={this.handleCaptchaResponse} />
+                    <ReCAPTCHA sitekey="6LfUv5ceAAAAAPl7LSzFgwhaq8-sg1A5qGhtQS2y" onChange={this.handleCaptchaResponse} />
                     <input className="fwd-btn" style={{width: "30%"}} type="submit" value="Get CPH!" />
                   </form>
                   <br />

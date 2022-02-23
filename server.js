@@ -193,8 +193,8 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   res.send(response.data.result);
 })
 
-app.listen(3001, () => {
-  console.log('Ropsten faucet listening on port 3001');
+app.listen(9090, () => {
+  console.log('Ropsten faucet listening on port 9090');
 })
 
 function hexStringToBytes(hexStr) {
