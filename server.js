@@ -132,7 +132,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
   console.log("siteverify")*/
 
-  setupBlacklist(to)
+
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(to)
   if (!release) {
@@ -192,7 +192,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   }
 
   if (response.status != 200) return res.status(500);
-
+  setupBlacklist(to)
   res.send(response.data.result);
 })
 
