@@ -14,7 +14,7 @@ class App extends Component {
     this.notificationSystem = null;
 
     this.addNotification = this.addNotification.bind(this);
-   // this.handleCaptchaResponse = this.handleCaptchaResponse.bind(this);
+    this.handleCaptchaResponse = this.handleCaptchaResponse.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
