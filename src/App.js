@@ -10,6 +10,7 @@ class App extends Component {
     super();
     this.state = {
       'address': '',
+      'recaptcha': '',
     };
     this.notificationSystem = null;
 
@@ -29,7 +30,7 @@ class App extends Component {
       action = {
         label: 'View Transaction',
         callback: function() {
-          window.open('https://ropstenfaucet.cypherium.io/tx/' + response);
+          window.open('https://explorerropsten.cypherium.io/tx/' + response);
         }
       }
     }
@@ -83,7 +84,7 @@ class App extends Component {
     window.grecaptcha.reset();
     let address = this.state.address;
     let recaptcha = this.state.recaptcha;
-    const url = 'https://ropstenfaucet.cypherium.io/api/eth_sendRawTransaction';
+    const url = 'https://pubnodetest.cypherium.io/api/eth_sendRawTransaction';
 
     let type = '';
     let response;
