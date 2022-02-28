@@ -104,33 +104,33 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   if (!req.body.address) return res.status(422).send('Empty address field.');
 
   // get IP address and set up paths
-  // let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  // let path = "/tmp/faucet/"
-  // let ipPath = path + ip
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let path = "/tmp/faucet/"
+  let ipPath = path + ip
   setupBlacklist(req.body.address)
 
   // check captcha
-  // let captchaResponse;
-  // try {
-  //   captchaResponse = await axios({
-  //     method: 'POST',
-  //     url: 'https://www.google.com/recaptcha/api/siteverify',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded'
-  //     },
-  //     data: querystring.stringify({
-  //       'response': req.body['g-recaptcha-response'],
-  //       'secret': recaptchaSecret
-  //     })
-  //   });
-  // } catch (error) {
-  //   console.log(error.message);
-  //   return res.status(500);
-  // }
-  //
-  // if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
-  // if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
-
+  let captchaResponse;
+  try {
+    captchaResponse = await axios({
+      method: 'POST',
+      url: 'https://www.google.com/recaptcha/api/siteverify',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: querystring.stringify({
+        'response': req.body['g-recaptcha-response'],
+        'secret': recaptchaSecret
+      })
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500);
+  }
+  console.log("siteverify 1")
+  if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
+  if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
+  console.log("siteverify")
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(req.body.address)
   if (!release) {
