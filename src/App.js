@@ -83,7 +83,7 @@ class App extends Component {
     window.grecaptcha.reset();
     let address = this.state.address;
     let recaptcha = this.state.recaptcha;
-    const url = 'http://ropstenfaucet.cypherium.io/api/eth_sendRawTransaction';
+    const url = 'https://ropstenfaucet.cypherium.io/api/eth_sendRawTransaction';
 
     let type = '';
     let response;
