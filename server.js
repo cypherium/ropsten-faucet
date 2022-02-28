@@ -110,7 +110,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
 
 
   // check captcha
-  let captchaResponse;
+/*  let captchaResponse;
   try {
     captchaResponse = await axios({
       method: 'POST',
@@ -130,7 +130,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   console.log("siteverify 1")
   if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
   if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
-  console.log("siteverify")
+  console.log("siteverify")*/
   setupBlacklist(req.body.address)
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(req.body.address)
@@ -188,7 +188,6 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
       console.log(error.message);
       return res.status(500);
     }
-    console.log("response",response);
   }
 
   if (response.status != 200) return res.status(500);
