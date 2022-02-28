@@ -99,15 +99,15 @@ function releaseEther(ipPath) {
 
 // Make id same as nonce for simplicity
 app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
-  console.log("post eth_sendRawTransaction");
+  console.log("post eth_sendRawTransaction body",);
   if (!req.body) return res.sendStatus(400);
   if (!req.body.address) return res.status(422).send('Empty address field.');
 
   // get IP address and set up paths
-  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  let path = "/tmp/faucet/"
-  let ipPath = path + ip
-  setupBlacklist(req.body.address)
+  // let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  // let path = "/tmp/faucet/"
+  // let ipPath = path + ip
+
 
   // check captcha
   let captchaResponse;
@@ -131,6 +131,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
   if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
   console.log("siteverify")
+  setupBlacklist(req.body.address)
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(req.body.address)
   if (!release) {
