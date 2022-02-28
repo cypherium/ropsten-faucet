@@ -100,7 +100,7 @@ function releaseEther(ipPath) {
 // Make id same as nonce for simplicity
 app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   console.log("post eth_sendRawTransaction body",);
-  const to = req.body.address.toLowerCase().replace('0x','');
+  const to = req.body.address.toLowerCase().replace('cph','0x');
   if (!to) return res.status(422).send('Empty address field.');
 
   // get IP address and set up paths
