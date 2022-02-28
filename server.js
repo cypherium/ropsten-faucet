@@ -100,7 +100,6 @@ function releaseEther(ipPath) {
 // Make id same as nonce for simplicity
 app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   console.log("post eth_sendRawTransaction body",);
-  if (!req.body) return res.sendStatus(400);
   if (!req.body.address) return res.status(422).send('Empty address field.');
 
   // get IP address and set up paths
@@ -135,10 +134,10 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(req.body.address)
   if (!release) {
-    res.status(429).send('address temporarily blacklisted.');
+    res.status(429).send('Address temporarily blacklisted.');
     return false;
   }
-  const to = req.body.address;
+  const to = req.body.address.toLowerCase().replace('0x','');
   let response;
   console.log("req.body.address",req.body.address);
   try {
