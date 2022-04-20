@@ -1,4 +1,4 @@
-const CypheriumTx = require('cypheriumjs-tx');
+const EthereumTx = require('ethereumjs-tx');
 const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
@@ -12,14 +12,14 @@ const querystring = require('querystring');
 const config = require('./config.js');
 
 const app = express();
-const TX_VERSION = '0x122';
-const TX_DEFAULT_GASLIMIT = '0x5708';
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
 app.options('/api/eth_sendRawTransaction', cors());
 
 const privateKey = config.privateKey;
+const key = Buffer.from(privateKey, 'hex');
 const url = 'https://pubnodestest.cypherium.io';
 const blacklistTime = 1440; //mins
 const recaptchaSecret = config.recaptchaSecret;
@@ -33,26 +33,22 @@ const recaptchaSecret = config.recaptchaSecret;
 // get nonce in future using 'getTransactionCount'
 // Generate raw tx
 function generateTx(nonce, to) {
+  // const testWeiAmount = 1000000000000000;
+  // const value = '0x' + parseInt(testWeiAmount).toString(16);
   const amount = 5000000000000000000;
   const value = '0x' + parseInt(amount).toString(16);
   const txParams = {
-    version: TX_VERSION,
-    senderKey: '0x' + privateKey.substring(64, 128),
     nonce: nonce,
-    gasLimit: TX_DEFAULT_GASLIMIT,
-    gasPrice: '0x430e23400',
+    gasPrice: '0x2540be400',
+    gasLimit: '0xc350',
     to: to,
-    data: 0x00,
     value: value,
-    chainId: 12124
-  };
+    data: '0x00',
+    chainId: 16163
+  }
 
-  //console.log("Transfer parameters：" + JSON.stringify(txParams));
-  const tx = new CypheriumTx.Transaction(txParams, {
-  });
-  var p = new Uint8Array(hexStringToBytes(privateKey));
-  var k = new Uint8Array(hexStringToBytes(privateKey.substring(64, 128)));
-  tx.signWith25519(p, k);
+  const tx = new EthereumTx(txParams)
+  tx.sign(key);
   const serializedTx = tx.serialize();
   return serializedTx.toString('hex');
 }
@@ -70,10 +66,10 @@ function setupBlacklist(path) {
 }
 
 // use blacklist to detemine ether eligbility
-  // stat the file, if virgin touch the file and release the ether
-  // if file exists check modified date
-  // < 60 mins reject
-  // > 60 mins touch the file and release
+// stat the file, if virgin touch the file and release the ether
+// if file exists check modified date
+// < 60 mins reject
+// > 60 mins touch the file and release
 function releaseEther(ipPath) {
   try {
     let stats = fs.statSync(ipPath);
@@ -84,16 +80,16 @@ function releaseEther(ipPath) {
     var duration = moment.duration(now.diff(mtime));
 
     if (duration.asMinutes() > blacklistTime) {
-        touch.sync(ipPath);
-        return true;
+      touch.sync(ipPath);
+      return true;
     } else {
-        console.log(ipPath + ' - blacklisted')
-        return false;
+      console.log(ipPath + ' - blacklisted')
+      return false;
     }
   }
   catch (err) {
-      touch.sync(ipPath)
-      return true;
+    touch.sync(ipPath)
+    return true;
   }
 }
 
@@ -110,28 +106,28 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
 
 
   // check captcha
-/*  let captchaResponse;
-  try {
-    captchaResponse = await axios({
-      method: 'POST',
-      url: 'https://www.google.com/recaptcha/api/siteverify',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: querystring.stringify({
-        'response': req.body['g-recaptcha-response'],
-        'secret': recaptchaSecret
-      })
-    });
-  } catch (error) {
-    console.log(error.message);
-    return res.status(500);
-  }
-  console.log("siteverify 1")
-  if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
-  if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
-  console.log("siteverify")*/
-
+  /*  let captchaResponse;
+    try {
+      captchaResponse = await axios({
+        method: 'POST',
+        url: 'https://www.google.com/recaptcha/api/siteverify',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: querystring.stringify({
+          'response': req.body['g-recaptcha-response'],
+          'secret': recaptchaSecret
+        })
+      });
+    } catch (error) {
+      console.log(error.message);
+      return res.status(500);
+    }
+    console.log("siteverify 1")
+    if (!captchaResponse.data.success) return res.status(409).send('Invalid Recaptcha.');
+    if (captchaResponse.data.hostname != ip) console.log('Captcha was not solved at host ip');
+    console.log("siteverify")
+  */
 
   // release variable below determines whether IP is blacklisted
   let release = releaseEther(to)
@@ -163,7 +159,9 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
   let txCount = response.data.result;
   console.log("txCount",txCount);
   let done = false;
+
   while (!done) {
+    console.log('attempting to send');
     let rawTx = "0x" + generateTx(txCount, to);
     let params = {
       "jsonrpc": "2.0",
@@ -171,6 +169,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
       "method": "eth_sendRawTransaction",
       "params": [rawTx]
     };
+
     try {
       response = await axios({
         method: 'POST',
@@ -180,6 +179,7 @@ app.post('/api/eth_sendRawTransaction', cors(), async (req, res) => {
         },
         data: params
       });
+
       if (typeof response.data.result != "undefined") {
         done = true;
       } else if (response.data.error.message != "undefined") {
